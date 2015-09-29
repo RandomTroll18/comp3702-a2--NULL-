@@ -1,0 +1,12 @@
+package main;
+
+/**
+ * COMP3702 Assignment 2
+ * 
+ * Class that will run everything
+ * @author Josh
+ *
+ */
+public class Main {
+
+}
