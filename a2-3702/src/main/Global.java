@@ -20,10 +20,12 @@ public class Global {
 	
 	/**
 	 * Initialize timing variables
+	 * 
+	 * @param time - The time limit in seconds
 	 */
-	public static void initializeTimer () {
+	public static void initializeTimer (int time) {
 		startTime = System.currentTimeMillis();
-		timeLimit = startTime + 60000; // The time limit is 60 seconds
+		timeLimit = startTime + (time * 1000); // The time limit is 60 seconds
 	}
 	
 	/**

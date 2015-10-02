@@ -1,0 +1,128 @@
+package main;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
+import problem.Fridge;
+import problem.Matrix;
+
+/**
+ * Class that will do all the work to solve the problem
+ */
+public class WorkSpace {
+	
+	private String outputFileName; // The file to output to
+	private int numberOfWeeks; // The number of weeks to account for
+	private double cost; // The cost
+	private double discountFactor; // The discount factor
+	private Fridge fridge; // The fridge
+	private List<Matrix> probabilities; // The probabilities 
+
+	/**
+	 * Load the parameters and stochastic model of the user's consumption 
+	 * behaviour
+	 * 
+	 * @param inputFile - The input file
+	 * 
+	 * @return true if successful. false otherwise
+	 */
+	private boolean loadInputFile (String inputFile) {
+		BufferedReader reader; // The buffered reader
+		String line; // The line currently being read
+		boolean success = true; // Record whether or not we were successful in reading the file
+		int lineNo = 0; // The number of lines that were just read
+		Scanner scanner; // A scanner for a particular line
+		
+		try {
+			reader = new BufferedReader(new FileReader(inputFile));
+			
+			line = reader.readLine();
+			lineNo++;
+			scanner = new Scanner(line);
+			this.numberOfWeeks = scanner.nextInt();
+			scanner.close();
+
+			line = reader.readLine();
+			lineNo++;
+			scanner = new Scanner(line);
+			cost = scanner.nextDouble();
+			scanner.close();
+			
+			line = reader.readLine();
+			lineNo++;
+			scanner = new Scanner(line);
+			discountFactor = scanner.nextDouble();
+			scanner.close();
+			
+			line = reader.readLine();
+			lineNo++;
+			fridge = new Fridge(line.trim().toLowerCase());
+			
+			probabilities = new ArrayList<Matrix>();
+			for (int k = 0; k < fridge.getMaxTypes(); k++) {
+				double[][] data = new double[fridge.getCapacity() + 1]
+						[fridge.getMaxItemsPerType() + 1];
+				for (int i = 0; i <= fridge.getCapacity(); i++) {
+					line = reader.readLine();
+					lineNo++;
+					double rowSum = 0;
+					scanner = new Scanner(line);
+					for (int j = 0; j <= fridge.getMaxItemsPerType(); j++) {
+						data[i][j] = scanner.nextDouble();
+						rowSum += data[i][j];
+					}
+					scanner.close();
+					if (rowSum != 1) {
+						throw new InputMismatchException(
+								"Row probabilities do not sum to 1.");
+					}
+				}
+				probabilities.add(new Matrix(data));
+			}
+			System.out.println("Number of weeks: " + numberOfWeeks);
+			System.out.println("Cost: " + cost);
+			System.out.println
+			success = true;
+			reader.close();
+		} catch (Exception e) {
+			success = false; // We failed somehow
+			String errorToPrint; // The error to print
+			Class<? extends Exception> exceptionClass = e.getClass();
+			
+			if (exceptionClass.equals(InputMismatchException.class)) {
+				errorToPrint = String.format(
+						"Invalid number format on line %d: %s", lineNo,
+						e.getMessage());
+			} else if (exceptionClass.equals(NoSuchElementException.class)) {
+				errorToPrint = String.format("Not enough tokens on line %d",
+						lineNo);
+			} else if (exceptionClass.equals(NullPointerException.class)) {
+				errorToPrint = String.format("Line %d expected, but file ended.", 
+						lineNo);
+			} else {
+				errorToPrint = "Unhandled exception in reading input file";
+			}
+			System.err.println(errorToPrint);
+		}
+		
+		return success;
+	}
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param inputFile - path to input file
+	 * @param outputFile - path to output file
+	 */
+	public WorkSpace (String inputFile, String outputFile) {
+		this.outputFileName = outputFile;
+		
+		
+	}
+	
+}
