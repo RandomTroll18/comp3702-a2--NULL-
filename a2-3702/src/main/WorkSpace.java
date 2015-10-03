@@ -78,6 +78,7 @@ public class WorkSpace {
 					}
 					scanner.close();
 					if (rowSum != 1) {
+						reader.close();
 						throw new InputMismatchException(
 								"Row probabilities do not sum to 1.");
 					}
@@ -88,7 +89,12 @@ public class WorkSpace {
 			System.out.println("Cost: " + cost);
 			System.out.println("Discount Factor: " + this.discountFactor);
 			System.out.println("Fridge: " + this.fridge.getName());
-			System.out.println("Probabilities: " + this.probabilities);
+			System.out.println("Probabilities: " + Global.NEWLINE);
+			for (int i = 0; i < this.probabilities.size(); ++i) {
+				System.out.println("Matrix " + (i + 1) + ": " 
+							+ Global.NEWLINE 
+							+ this.probabilities.get(i));
+			}
 			success = true;
 			reader.close();
 		} catch (Exception e) {

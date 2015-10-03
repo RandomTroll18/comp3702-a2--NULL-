@@ -74,6 +74,9 @@ public class Main {
 		if (!checkArguments(args)) return;
 		
 		workSpace = new WorkSpace(args[0], args[1]);
+		
+		Global.setEndTime();
+		Global.checkTime();
 	}
 	
 }

@@ -3,6 +3,7 @@ package problem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import main.Global;
 
 public class Matrix {
 	
@@ -28,6 +29,18 @@ public class Matrix {
 	
 	public List<Double> getRow(int row) {
 		return Collections.unmodifiableList(data.get(row));
+	}
+	
+	/**
+	 * Tostring function
+	 */
+	@Override
+	public String toString() {
+		String finalString = ""; // The string to return
+		for (int i = 0; i < numRows; ++i) {
+			finalString += data.get(i) + Global.NEWLINE;
+		}
+		return finalString;
 	}
 
 }
