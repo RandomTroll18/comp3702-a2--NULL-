@@ -1,6 +1,6 @@
 Assignment 2 COMP3702 Instructions on Compiling
-Student Name: Joshua Rillera, Thomas Milward
-Student Number: 43150621, [Tom enter your Student Number Here]
+Student Name: Joshua Rillera, Thomas Millward
+Student Number: 43150621, 43236945
 Date Due: 11:59, 17th of October, 2015
 
 Instructions
