@@ -17,6 +17,7 @@ public class Global {
 	private static long timeLimit;
 	private static long endTime = 0;
 	private static double timeTaken;
+	private static int initializedTime;
 	
 	/**
 	 * Get the current time
@@ -35,6 +36,7 @@ public class Global {
 	public static void initializeTimer (int time) {
 		startTime = System.currentTimeMillis();
 		timeLimit = startTime + (time * 1000); // The time limit is 60 seconds
+		initializedTime = time;
 	}
 	
 	/**
@@ -102,13 +104,13 @@ public class Global {
 	public static void checkTime () {
 		System.out.println("Time Taken (in seconds): " 
 				+ Global.timeTaken() + "s");
-		if (timeTaken() <= 60) {
+		if (timeTaken() <= initializedTime) {
 			System.out.println("Still On Time with " 
-					+ ((double)60 - timeTaken()) 
+					+ ((double)initializedTime - timeTaken()) 
 					+ " seconds left");
 		} else {
 			System.out.println("Over-time by: " 
-					+ (timeTaken() - (double)60) 
+					+ (timeTaken() - (double)initializedTime) 
 					+ " seconds");
 		}
 	}
