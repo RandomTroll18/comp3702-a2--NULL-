@@ -10,6 +10,9 @@ import java.util.Scanner;
 
 import problem.Fridge;
 import problem.Matrix;
+import problem.ProblemSpec;
+import problem.Simulator;
+import solver.ShoppingGenerator;
 
 /**
  * Class that will do all the work to solve the problem
@@ -17,6 +20,7 @@ import problem.Matrix;
 public class WorkSpace {
 	
 	private String outputFileName; // The file to output to
+	private String inputFileName; // The file to read from
 	private int numberOfWeeks; // The number of weeks to account for
 	private double cost; // The cost
 	private double discountFactor; // The discount factor
@@ -122,16 +126,77 @@ public class WorkSpace {
 	}
 	
 	/**
+	 * Solve the problem
+	 * 
+	 * @return true if solved in time. false otherwise
+	 */
+	public boolean solve() {
+		boolean solved = true; // Record if solved or not
+		double startSimulatorTime, endSimulatorTime, timeTaken; // Simulator timer
+		ProblemSpec spec; // The problem spec
+		Simulator simulator; // The simulator
+		ShoppingGenerator generator; // The shopping generator
+		
+		try {
+			spec = new ProblemSpec();
+			spec.loadInputFile(inputFileName);
+			simulator = new Simulator(inputFileName);
+			generator = new ShoppingGenerator(inputFileName);
+			
+			for (int i = 0; i < spec.getNumWeeks(); i++) {
+				startSimulatorTime = Global.currentTime();
+				List<Integer> shopping = generator.generateShopping(
+						simulator.getInventory());
+				System.out.println("Shopping List: " + shopping);
+				System.out.println("Maximum purchase: " + spec.getFridge().getMaxPurchase());
+				simulator.simulateStep(shopping);
+				endSimulatorTime = Global.currentTime();
+				timeTaken = endSimulatorTime - startSimulatorTime;
+				if (timeTaken > 60) {
+					System.err.println("Step not solved in time! Took " 
+								+ (timeTaken - 60.0) 
+								+ " extra seconds");
+					throw new Exception("Ran out of time");
+				} else {
+					System.out.println("Step solved in time! "
+								+ (60.0 - timeTaken)
+								+ " seconds left to spare");
+				}
+			}
+			solved = true;
+			simulator.saveOutput(outputFileName);
+		} catch (Exception e) {
+			System.err.println("Error found: " + e.getMessage());
+			System.err.println("Stack trace: ");
+			e.printStackTrace();
+			solved = false;
+		}
+		
+		if (solved) { // Need to check if we solved it in time
+			if (Global.stillTimeLeft()) {
+				return true;
+			} else {
+				return false;
+			}
+		} else { // Error occurred
+			return false;
+		}
+	}
+	
+	/**
 	 * Constructor
 	 * 
 	 * @param inputFile - path to input file
 	 * @param outputFile - path to output file
 	 */
 	public WorkSpace (String inputFile, String outputFile) {
+		/* Get file names */
 		this.outputFileName = outputFile;
+		this.inputFileName = inputFile;
 		
 		if (!loadInputFile(inputFile)) {
 			System.err.println("Loading input file failed");
+			System.exit(99);
 		}
 	}
 	

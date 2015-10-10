@@ -69,11 +69,16 @@ public class Main {
 	 */
 	public static void main (String []args) {
 		WorkSpace workSpace; // The workspace that we will solve the problem in
-		Global.initializeTimer(60);
+		Global.initializeTimer(300); // 5 minutes
 		
 		if (!checkArguments(args)) return;
 		
 		workSpace = new WorkSpace(args[0], args[1]);
+		if (workSpace.solve()) {
+			System.out.println("Solved in time");
+		} else {
+			System.out.println("Not solved in time");
+		}
 		
 		Global.setEndTime();
 		Global.checkTime();

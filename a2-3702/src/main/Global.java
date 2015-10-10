@@ -19,6 +19,15 @@ public class Global {
 	private static double timeTaken;
 	
 	/**
+	 * Get the current time
+	 * 
+	 * @return The current time in seconds
+	 */
+	public static double currentTime () {
+		return ((double)System.currentTimeMillis()) / 1000;
+	}
+	
+	/**
 	 * Initialize timing variables
 	 * 
 	 * @param time - The time limit in seconds

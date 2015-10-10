@@ -1,0 +1,186 @@
+package main;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
+import problem.Fridge;
+import problem.Matrix;
+import problem.ProblemSpec;
+import problem.Simulator;
+import solver.ShoppingGenerator;
+
+/**
+ * Class that will do all the work to solve the problem
+ */
+public class WorkSpace {
+	
+	private String outputFileName; // The file to output to
+	private String inputFileName; // The file to read from
+	private int numberOfWeeks; // The number of weeks to account for
+	private double cost; // The cost
+	private double discountFactor; // The discount factor
+	private Fridge fridge; // The fridge
+	private List<Matrix> probabilities; // The probabilities 
+
+	/**
+	 * Load the parameters and stochastic model of the user's consumption 
+	 * behaviour
+	 * 
+	 * @param inputFile - The input file
+	 * 
+	 * @return true if successful. false otherwise
+	 */
+	private boolean loadInputFile (String inputFile) {
+		BufferedReader reader; // The buffered reader
+		String line; // The line currently being read
+		boolean success = false; // Record whether or not we were successful in reading the file
+		int lineNo = 0; // The number of lines that were just read
+		Scanner scanner; // A scanner for a particular line
+		
+		try {
+			reader = new BufferedReader(new FileReader(inputFile));
+			
+			line = reader.readLine();
+			lineNo++;
+			scanner = new Scanner(line);
+			this.numberOfWeeks = scanner.nextInt();
+			scanner.close();
+
+			line = reader.readLine();
+			lineNo++;
+			scanner = new Scanner(line);
+			this.cost = scanner.nextDouble();
+			scanner.close();
+			
+			line = reader.readLine();
+			lineNo++;
+			scanner = new Scanner(line);
+			this.discountFactor = scanner.nextDouble();
+			scanner.close();
+			
+			line = reader.readLine();
+			lineNo++;
+			this.fridge = new Fridge(line.trim().toLowerCase());
+			
+			this.probabilities = new ArrayList<Matrix>();
+			for (int k = 0; k < this.fridge.getMaxTypes(); k++) {
+				double[][] data = new double[this.fridge.getCapacity() + 1]
+						[this.fridge.getMaxItemsPerType() + 1];
+				for (int i = 0; i <= this.fridge.getCapacity(); i++) {
+					line = reader.readLine();
+					lineNo++;
+					double rowSum = 0;
+					scanner = new Scanner(line);
+					for (int j = 0; j <= this.fridge.getMaxItemsPerType(); j++) {
+						data[i][j] = scanner.nextDouble();
+						rowSum += data[i][j];
+					}
+					scanner.close();
+					if (rowSum != 1) {
+						reader.close();
+						throw new InputMismatchException(
+								"Row probabilities do not sum to 1.");
+					}
+				}
+				this.probabilities.add(new Matrix(data));
+			}
+			System.out.println("Number of weeks: " + numberOfWeeks);
+			System.out.println("Cost: " + cost);
+			System.out.println("Discount Factor: " + this.discountFactor);
+			System.out.println("Fridge: " + this.fridge.getName());
+			System.out.println("Probabilities: " + Global.NEWLINE);
+			for (int i = 0; i < this.probabilities.size(); ++i) {
+				System.out.println("Matrix " + (i + 1) + ": " 
+							+ Global.NEWLINE 
+							+ this.probabilities.get(i));
+			}
+			success = true;
+			reader.close();
+		} catch (Exception e) {
+			success = false; // We failed somehow
+			String errorToPrint; // The error to print
+			Class<? extends Exception> exceptionClass = e.getClass();
+			
+			if (exceptionClass.equals(InputMismatchException.class)) {
+				errorToPrint = String.format(
+						"Invalid number format on line %d: %s", lineNo,
+						e.getMessage());
+			} else if (exceptionClass.equals(NoSuchElementException.class)) {
+				errorToPrint = String.format("Not enough tokens on line %d",
+						lineNo);
+			} else if (exceptionClass.equals(NullPointerException.class)) {
+				errorToPrint = String.format("Line %d expected, but file ended.", 
+						lineNo);
+			} else {
+				errorToPrint = "Unhandled exception in reading input file";
+			}
+			System.err.println(errorToPrint);
+		}
+		
+		return success;
+	}
+	
+	/**
+	 * Solve the problem
+	 * 
+	 * @return true if solved in time. false otherwise
+	 */
+	public boolean solve() {
+		boolean solvedInTime; // Record if we solved it in time
+		boolean solved; // Record if solved or not
+		ProblemSpec spec; // The problem spec
+		Simulator simulator; // The simulator
+		ShoppingGenerator generator; // The shopping generator
+		
+		try {
+			spec = new ProblemSpec();
+			spec.loadInputFile(inputFileName);
+			simulator = new Simulator(inputFileName);
+			generator = new ShoppingGenerator(inputFileName);
+			
+			for (int i = 0; i < spec.getNumWeeks(); i++) {
+				List<Integer> shopping = generator.generateShopping(
+						simulator.getInventory());
+				System.out.println("Shopping List: " + shopping);
+				System.out.println("Maximum purchase: " + spec.getFridge().getMaxPurchase());
+				simulator.simulateStep(shopping);
+			}
+			
+			simulator.saveOutput(outputFileName);
+		} catch (Exception e) {
+			System.err.println("Error found: " + e.getMessage());
+			System.err.println("Stack trace: ");
+			e.printStackTrace();
+		}
+		
+		
+		if (Global.stillTimeLeft()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param inputFile - path to input file
+	 * @param outputFile - path to output file
+	 */
+	public WorkSpace (String inputFile, String outputFile) {
+		/* Get file names */
+		this.outputFileName = outputFile;
+		this.inputFileName = inputFile;
+		
+		if (!loadInputFile(inputFile)) {
+			System.err.println("Loading input file failed");
+			System.exit(99);
+		}
+	}
+	
+}
