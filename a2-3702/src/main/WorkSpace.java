@@ -34,7 +34,7 @@ public class WorkSpace {
 	private boolean loadInputFile (String inputFile) {
 		BufferedReader reader; // The buffered reader
 		String line; // The line currently being read
-		boolean success = true; // Record whether or not we were successful in reading the file
+		boolean success = false; // Record whether or not we were successful in reading the file
 		int lineNo = 0; // The number of lines that were just read
 		Scanner scanner; // A scanner for a particular line
 		
