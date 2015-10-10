@@ -31,7 +31,7 @@ public class ShoppingGenerator {
 		}
 		int totalShopping = 0;
 		for (int i = 0; i < fridge.getMaxTypes(); i++) {
-			if (totalItems >= fridge.getMaxPurchase()) {
+			if (totalItems >= fridge.getCapacity()) {
 				shopping.add(0);
 			} else {
 				shopping.add(1);

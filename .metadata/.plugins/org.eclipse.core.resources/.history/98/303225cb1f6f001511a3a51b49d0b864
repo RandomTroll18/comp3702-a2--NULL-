@@ -27,8 +27,6 @@ public class Solver {
 		for (int i = 0; i < spec.getNumWeeks(); i++) {
 			List<Integer> shopping = generator.generateShopping(
 					simulator.getInventory());
-			System.out.println("Shopping List: " + shopping);
-			System.out.println("Maximum purchase: " + spec.getFridge().getMaxPurchase());
 			simulator.simulateStep(shopping);
 		}
 		

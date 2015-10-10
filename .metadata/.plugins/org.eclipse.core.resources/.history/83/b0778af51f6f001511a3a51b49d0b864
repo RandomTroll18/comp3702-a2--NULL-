@@ -28,7 +28,7 @@ public class Solver {
 			List<Integer> shopping = generator.generateShopping(
 					simulator.getInventory());
 			System.out.println("Shopping List: " + shopping);
-			System.out.println("Maximum purchase: " + spec.getFridge().getMaxPurchase());
+			spec.getFridge().getMaxPurchase();
 			simulator.simulateStep(shopping);
 		}
 		
