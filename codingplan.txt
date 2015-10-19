@@ -1,0 +1,59 @@
+COMP3702 Coding Plan. Modify this where necessary
+
+1. Check the size of the fridge and use the appropriate algorithm
+	a. If fridge is <= medium, use Value Iteration
+	b. Else, use Monte Carlo
+2. Define an abstract class which can be extended to make these algorithms
+	a. E.g.
+
+	/**
+	* I don't think it should be policy generator. It 
+	* might have to be something else. Dunno. Can't think right now
+	*/
+	public abstract PolicyGenerator {
+
+	/**
+	* Run this policy generator
+	*
+	* @param Fridge fridge - The fridge in question
+	*/
+	public abstract bool run(Fridge fridge);
+
+	}
+
+	b. With this, you can just extend that to make any solver you want.
+	This will be useful for testing
+
+3. Define all the elements (refer to what we defined in the report)
+	a. State
+		-> State class
+		-> What will this state contain?
+		-> What should it be able to do?
+		-> What data should it return?
+	b. Action
+		-> Action class
+		-> How to represent action? Defined in the report
+		-> We need to be able to generate all the possible actions for 
+		the given setting. (e.g. for a fridge that can order at most 2 items 
+		and has 3 unique kinds of items, we need to generate all the possible 
+		shopping orders - (0, 0, 0), (1, 0, 0), (2, 0, 0), ...)
+	c. Transition Function
+		-> Can be a function in the fridge, workspace or problem spec.
+	d. Reward Function
+		-> Can be a function in the fridge, workspace or problem spec.
+
+4. Define the run function (not yet complete)
+	a. It's gonna be similar to what they have for their solver, except instead 
+	of using ShoppingGenerator, we do our own stuff
+
+5. (Optional) Write some tests for INDIVIDUAL bits of code.
+	a. Not the run() function because we need to have the foresight to determine 
+	what the end state would be :P Although, we can check the total penalty, 
+	but that's handled by the simulator so that's fine
+	b. Instead, we can write tests for individual bits that don't depend on 
+	random number generators (e.g. generating actions)
+
+6. Run our code with their example test cases.
+	a. Even write our own!
+
+7. Possible Profit
