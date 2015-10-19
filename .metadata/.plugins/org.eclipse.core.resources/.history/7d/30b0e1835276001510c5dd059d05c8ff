@@ -1,0 +1,13 @@
+package main;
+
+import java.util.*;
+import solver.OrderingAgent;
+
+/**
+ * Agent that uses the Monte Carlo Tree Search to generate 
+ * an approximate optimal policy
+ */
+public class MonteCarloAgent implements OrderingAgent {
+
+	
+}

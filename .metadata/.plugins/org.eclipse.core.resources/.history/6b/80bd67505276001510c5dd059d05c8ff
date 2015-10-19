@@ -1,0 +1,10 @@
+package main;
+
+import solver.OrderingAgent;
+
+public class ValueIterationAgent implements OrderingAgent {
+
+	public void doOfflineComputation() {
+		
+	}
+}

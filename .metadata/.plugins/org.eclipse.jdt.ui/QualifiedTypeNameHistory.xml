@@ -10,4 +10,6 @@
 <fullyQualifiedTypeName name="problem.Matrix"/>
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="main.Global"/>
+<fullyQualifiedTypeName name="solver.OrderingAgent"/>
+<fullyQualifiedTypeName name="problem.ProblemSpec"/>
 </qualifiedTypeNameHistroy>
