@@ -15,6 +15,13 @@ public class State {
 	private State parent;
 	private HashMap<Integer,Integer> state; //mapping of item to number of that item in state
 	
+	public State (double cost, State parent, HashMap state, HashSet<State> successors) {
+		this.cost = cost;
+		this.parent = parent;
+		this.state = state;
+		this.successors = successors;
+	}
+	
 	public double getCost(){
 		return this.cost; 
 	}
