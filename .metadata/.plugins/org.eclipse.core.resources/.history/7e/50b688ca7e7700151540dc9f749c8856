@@ -1,0 +1,8 @@
+package solver;
+
+/**
+ * The class representing the action taken by the fridge (purchases)
+ */
+public class Action {
+
+}
