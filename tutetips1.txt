@@ -1,0 +1,17 @@
+General pseudo-code for solving this fridge problem
+
+for all states
+	for all actions
+		know supply
+	for each consumption
+		calculate reward
+		calculate prob. of consumption
+		add value of state at time t
+			-> value = expected reward we could achieve achieve following best 
+			actions here out (for t more steps)
+	work out expected reward
+
+
+MCTS
+- Tree search on all possible states and all possible actions to take 
+in each state.
