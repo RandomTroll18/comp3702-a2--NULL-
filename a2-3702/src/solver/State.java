@@ -11,15 +11,21 @@ import java.util.HashSet;
  */
 public class State {
 	private double cost;
+	private HashMap<State, Integer> adjacentRewards;
 	private HashSet<State> successors;
 	private State parent;
 	private HashMap<Integer,Integer> state; //mapping of item to number of that item in state
 	
-	public State (double cost, State parent, HashMap state, HashSet<State> successors) {
+	public State (double cost, State parent, HashMap state, HashSet<State> successors, HashMap<State, Integer> adjRewards) {
 		this.cost = cost;
 		this.parent = parent;
 		this.state = state;
 		this.successors = successors;
+		this.adjacentRewards = adjRewards;
+	}
+	
+	public HashMap<State, Integer> getRewards() {
+		return this.adjacentRewards;
 	}
 	
 	public double getCost(){
