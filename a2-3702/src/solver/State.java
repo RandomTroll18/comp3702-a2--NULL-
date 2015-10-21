@@ -16,6 +16,14 @@ public class State {
 	private State parent;
 	private HashMap<Integer,Integer> state; //mapping of item to number of that item in state
 	
+	/**
+	 * Constructor
+	 * @param cost
+	 * @param parent
+	 * @param state
+	 * @param successors
+	 * @param adjRewards
+	 */
 	public State (double cost, State parent, HashMap<Integer, Integer> state, HashSet<State> successors, HashMap<State, Integer> adjRewards) {
 		this.cost = cost;
 		this.parent = parent;
@@ -24,9 +32,39 @@ public class State {
 		this.adjacentRewards = adjRewards;
 	}
 	
+	public State(HashMap<Integer, Integer> state) {
+		this.state = state;
+	}
+	
+	
+	/*
+	 * Setters
+	 */
+	public void setRewards(HashMap<State, Integer> rewards) {
+		this.adjacentRewards = rewards;
+	}
+		
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
+	
+	public void setSuccessors(HashSet<State> succ) {
+		this.successors = succ;
+	}
+	
+	public void setParents(State parent) {
+		this.parent = parent;
+	}
+	
+	
+	/*
+	 * Getters
+	 */
 	public HashMap<State, Integer> getRewards() {
 		return this.adjacentRewards;
 	}
+	
+	
 	
 	public double getCost(){
 		return this.cost; 
