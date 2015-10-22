@@ -111,11 +111,6 @@ public class ValueIterationAgent implements OrderingAgent {
 		int maxVal = this.fridge.getMaxItemsPerType(); // Maximum value
 		int localCurrentIndex = currentIndex; // The current index
 		
-		System.out.println("recursiveGeneration: maxSum: " + maxSum);
-		System.out.println("recursiveGeneration: remaining: " + remaining);
-		System.out.println("recursiveGeneration: current index: " + currentIndex);
-		System.out.println("recursiveGeneration: maximum index: " + (this.fridge.getMaxTypes() - 1));
-		
 		if (remaining < 0 || currentIndex > (this.fridge.getMaxTypes() - 1)) {
 			System.out.println("Base Case: Done at index " + currentIndex + " with " + remaining + " left");
 			return;
@@ -133,7 +128,7 @@ public class ValueIterationAgent implements OrderingAgent {
 				System.out.println("Current sum: " + maxSum);
 				currentMap.put(currentIndex, i);
 				addToList(generateType, currentMap);
-				recursiveGeneration(generateType, maxSum - i, maxSum - i, localCurrentIndex + 1, currentMap);
+				recursiveGeneration(generateType, maxSum - i, maxSum - i, ++localCurrentIndex, currentMap);
 			}
 		}
 	}
