@@ -9,7 +9,8 @@
 <fullyQualifiedTypeName name="problem.Fridge"/>
 <fullyQualifiedTypeName name="problem.Matrix"/>
 <fullyQualifiedTypeName name="java.util.List"/>
-<fullyQualifiedTypeName name="main.Global"/>
 <fullyQualifiedTypeName name="solver.OrderingAgent"/>
 <fullyQualifiedTypeName name="problem.ProblemSpec"/>
+<fullyQualifiedTypeName name="main.Global"/>
+<fullyQualifiedTypeName name="java.util.Set"/>
 </qualifiedTypeNameHistroy>

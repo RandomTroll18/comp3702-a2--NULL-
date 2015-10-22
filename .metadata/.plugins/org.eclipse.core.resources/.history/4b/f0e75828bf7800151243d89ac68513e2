@@ -52,6 +52,7 @@ public class ValueIterationAgent implements OrderingAgent {
 		Map<Integer, Integer> action; // Action
 		int maxSum = this.fridge.getMaxPurchase(); // The maximum amount we can purchase
 		int maxIndex = this.fridge.getMaxTypes() - 1; // The maximum index of an action
+		int currentIndex = 0; // The current index we are looking at
 		
 		System.out.println("Generating all possible actions");
 		startTime = endTime = Global.currentTime(); /* Set the time */
