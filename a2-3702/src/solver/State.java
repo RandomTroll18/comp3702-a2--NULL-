@@ -2,6 +2,8 @@ package solver;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -11,10 +13,10 @@ import java.util.HashSet;
  */
 public class State {
 	private double cost;
-	private HashMap<State, Integer> adjacentRewards;
-	private HashSet<State> successors;
+	private Map<State, Integer> adjacentRewards;
+	private Set<State> successors;
 	private State parent;
-	private HashMap<Integer,Integer> state; //mapping of item to number of that item in state
+	private Map<Integer,Integer> state; //mapping of item to number of that item in state
 	
 	/**
 	 * Constructor
@@ -32,8 +34,8 @@ public class State {
 		this.adjacentRewards = adjRewards;
 	}
 	
-	public State(HashMap<Integer, Integer> state) {
-		this.state = state;
+	public State(Map<Integer, Integer> currentList) {
+		this.state = currentList;
 	}
 	
 	
@@ -60,7 +62,7 @@ public class State {
 	/*
 	 * Getters
 	 */
-	public HashMap<State, Integer> getRewards() {
+	public Map<State, Integer> getRewards() {
 		return this.adjacentRewards;
 	}
 	
@@ -70,7 +72,7 @@ public class State {
 		return this.cost; 
 	}
 	
-	public HashSet<State> getSuccessors() {
+	public Set<State> getSuccessors() {
 		return this.successors; //who needs security when you can save one cpu cycle instead?
 	}
 	
@@ -78,7 +80,7 @@ public class State {
 		return this.parent;
 	}
 		
-	public HashMap<Integer, Integer> getState() {
+	public Map<Integer, Integer> getState() {
 		return this.state;
 	}
 	

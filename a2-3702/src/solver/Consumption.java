@@ -7,15 +7,15 @@ import java.util.*;
  * wants to consume
  */
 public class Consumption {
-	private List<Integer> consumption; // The amount being consumed
+	private Map<Integer, Integer> consumption; // The amount being consumed
 	
 	/**
 	 * Constructor
 	 * 
 	 * @param newConsumption - The new list of consumptions
 	 */
-	public Consumption (List<Integer> newConsumption) {
-		this.consumption = new ArrayList<Integer>(newConsumption);
+	public Consumption (Map<Integer, Integer> newConsumption) {
+		this.consumption = new HashMap<Integer, Integer>(newConsumption);
 	}
 	
 	/**

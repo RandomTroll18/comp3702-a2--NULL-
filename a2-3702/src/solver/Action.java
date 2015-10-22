@@ -7,15 +7,24 @@ import java.util.*;
  */
 public class Action {
 
-	private List<Integer> purchases; // The purchases
+	private Map<Integer, Integer> purchases; // The purchases
 	
 	/**
 	 * Constructor
 	 * 
-	 * @param List<Integer> newPurchaseList - new list of purchases
+	 * @param HashMap<Integer, Integer> newPurchaseList - new list of purchases
 	 */
-	public Action (List<Integer> newPurchaseList) {
-		this.purchases = new ArrayList<Integer>(newPurchaseList);
+	public Action (Map<Integer, Integer> newPurchaseList) {
+		this.purchases = new HashMap<Integer, Integer>(newPurchaseList);
+	}
+	
+	/**
+	 * Get the list of purchases
+	 * 
+	 * @return the list of purchases in this class
+	 */
+	public Map<Integer, Integer> getPurchases () {
+		return this.purchases;
 	}
 	
 	/**
@@ -31,5 +40,34 @@ public class Action {
 			return -1;
 		}
 		return this.purchases.get(itemType);
+	}
+	
+	@Override
+	public String toString () {
+		String toReturn; // The string to return
+		toReturn = this.purchases.toString();
+		return toReturn;
+	}
+	
+	@Override
+	public int hashCode () {
+		return this.purchases.hashCode();
+	}
+	
+	@Override
+	public boolean equals (Object obj) {
+		Action toCompare;
+		
+		if (!obj.getClass().equals(this.getClass())) {
+			return false;
+		}
+		
+		toCompare = (Action)obj;
+		
+		if (!this.purchases.equals(toCompare.getPurchases())) {
+			return false;
+		}
+		
+		return true;
 	}
 }

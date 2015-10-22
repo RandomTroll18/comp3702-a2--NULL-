@@ -1,0 +1,203 @@
+package main;
+
+import java.util.*;
+
+import solver.OrderingAgent;
+import solver.State;
+import solver.Action;
+import solver.Consumption;
+import problem.*;
+
+/**
+ * Agent that uses Value Iteration to generate an optimal policy
+ */
+public class ValueIterationAgent implements OrderingAgent {
+	
+	private final int MAX_GENERATION_TIME = 60; // Amount of time (in sec) allowed for generation
+	private ProblemSpec spec = new ProblemSpec(); // The problem spec
+	private Fridge fridge; // The fridge
+    private List<Matrix> probabilities; // The probabilities
+    private List<State> possibleStates; // All the possible states
+    private List<Action> possibleActions; // All possible actions
+    private List<Consumption> possibleConsumptions; // All possible consumptions
+	
+	/**
+	 * Constructor
+	 * @param spec The problem spec
+	 */
+	public ValueIterationAgent(ProblemSpec spec) {
+		this.spec = spec;
+		this.fridge = spec.getFridge();
+	    this.probabilities = spec.getProbabilities();
+	    
+	    this.possibleStates = new ArrayList<State>();
+	    this.possibleActions = new ArrayList<Action>();
+	    this.possibleConsumptions = new ArrayList<Consumption>();
+	}
+	
+	/**
+	 * Generate all possible consumptions
+	 */
+	private void generateAllPossibleConsumptions() {
+		double startTime, endTime, timeTaken; // Timer for generating states
+	}
+	
+	/**
+	 * Generate all possible actions
+	 * 
+	 * TODO: I volunteer as tribute to do this - Josh
+	 */
+	private void generateAllPossibleActions() {
+		double startTime, endTime, timeTaken; // Timer for generating states
+		Map<Integer, Integer> action; // Action
+		int maxSum = this.fridge.getMaxPurchase(); // The maximum amount we can purchase
+		int maxIndex = this.fridge.getMaxTypes() - 1; // The maximum index of an action
+		int currentIndex = 0; // The current index we are looking at
+		
+		System.out.println("Generating all possible actions");
+		startTime = endTime = Global.currentTime(); /* Set the time */
+		action = new HashMap<Integer, Integer>();
+		
+		/* Generate zero case */
+		for (int i = 0; i < (maxIndex + 1); ++i) {
+			action.put(i, 0);
+		}
+		this.possibleActions.add(new Action(action));
+		
+		while ((timeTaken = (endTime - startTime)) < 60) {
+			System.out.println("Current time taken: " + timeTaken);
+			if (this.fridge.getMaxTypes() <= 0) {
+				System.err.println("Invalid number of item types");
+				System.exit(10);
+			} else if (this.fridge.getMaxTypes() == 1) { // Only have 1 type of item
+				break;
+			} else { // Fridge has 2 or more types of items
+				for (int i = maxSum; i >= 0; --i) {
+					
+					System.out.println("Starting with value: " + i);
+					recursiveGeneration(1, maxSum, i, 0, action);
+					for (int k = 0; k < (maxIndex + 1); ++k) {  // Reset list
+						action.put(k, 0);
+					}
+				}	
+			}
+			endTime = Global.currentTime(); // Get current time
+			break;
+		}
+		
+		System.out.println("Printing generated actions");
+		for (Action currentAction : possibleActions) {
+			System.out.println(currentAction.toString());
+		}
+	}
+	
+	/**
+	 * Recursively generate list based on given values
+	 * 
+	 * @param int generateType - The type we are currently generating
+	 * @param int maxSum - The maximum sum
+	 * @param int remaining - The remaining value
+	 * @param int currentIndex - The current index we are looking at
+	 * @param Map<Integer, Integer> currentMap - Current map being modified
+	 */
+	private void recursiveGeneration (int generateType, int maxSum, int remaining, int currentIndex, Map<Integer, Integer> currentMap) {
+		int currentRemaining = remaining; // The current amount remaining
+		int maxVal = this.fridge.getMaxItemsPerType(); // Maximum value
+		int localCurrentIndex = currentIndex; // The current index
+		
+		if (this.fridge.getMaxItemsPerType() == remaining) { // Too much remaining
+			System.out.println("Too much remaining");
+			currentMap.put(currentIndex, this.fridge.getMaxItemsPerType());
+			addToList(generateType, currentMap);
+			remaining -= this.fridge.getMaxItemsPerType();
+			recursiveGeneration(generateType, maxSum, remaining, ++localCurrentIndex, currentMap);
+		} else if (remaining <= 0 || currentIndex >= currentMap.size()) {
+			System.out.println("Done at index: " + currentIndex + " with " + remaining + " left");
+			return;
+		} else {
+			System.out.println("Still have a lot to generate");
+			for (int i = remaining; i >= 0; --i) {
+				System.out.println("Current remaining: " + i + " to set at " + currentIndex);
+				currentMap.put(currentIndex, i);
+				addToList(generateType, currentMap);
+				recursiveGeneration(generateType, maxSum, i, ++localCurrentIndex, currentMap);
+			}
+		}
+	}
+	
+	/**
+	 * Add the given map to the respective list
+	 * 
+	 * @param int generateType - The type of item to add
+	 * @param Map<Integer, Integer> toAdd - The map to add
+	 */
+	void addToList (int generateType, Map<Integer, Integer> toAdd) {
+		/* Containers for various types */
+		State stateContainer;
+		Action actionContainer;
+		Consumption consumptionContainer;
+		
+		switch (generateType) {
+		case 0:
+			stateContainer = new State(toAdd);
+			if (!this.possibleStates.contains(stateContainer)) {
+				this.possibleStates.add(stateContainer);
+			}
+			break;
+		case 1:
+			actionContainer = new Action(toAdd);
+			if (!this.possibleActions.contains(actionContainer)) {
+				this.possibleActions.add(actionContainer);
+			}
+			break;
+		case 2:
+			consumptionContainer = new Consumption(toAdd);
+			if (!this.possibleConsumptions.contains(consumptionContainer)) {
+				this.possibleConsumptions.add(consumptionContainer);
+			}
+			break;
+		default:
+			System.err.println("Invalid generation type");
+			System.exit(13);
+		}
+	}
+	
+	/**
+	 * Generate all the possible states
+	 */
+	private void generateAllPossibleStates() {
+		double startTime, endTime, timeTaken; // Timer for generating states
+	}
+	
+	/** Interface methods */
+	
+	public void doOfflineComputation() {
+		generateAllPossibleStates();
+		generateAllPossibleActions();
+		generateAllPossibleConsumptions();
+	}
+	
+	public List<Integer> generateShoppingList(List<Integer> inventory,
+	            int numWeeksLeft) {
+		// Example code that buys one of each item type.
+        // TODO Replace this with your own code.
+		List<Integer> shopping = new ArrayList<Integer>();
+		int totalItems = 0;
+		for (int i : inventory) {
+			totalItems += i;
+		}
+		
+		int totalShopping = 0;
+		for (int i = 0; i < fridge.getMaxTypes(); i++) {
+			if (totalItems >= fridge.getCapacity() || 
+			        totalShopping >= fridge.getMaxPurchase()) {
+				shopping.add(0);
+			} else {
+				shopping.add(1);
+				totalShopping ++;
+				totalItems ++;
+			}
+		}
+		return shopping;
+	}
+}

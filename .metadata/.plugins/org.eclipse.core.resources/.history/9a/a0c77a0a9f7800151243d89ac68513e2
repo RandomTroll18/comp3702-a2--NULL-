@@ -1,0 +1,41 @@
+package solver;
+
+import java.util.*;
+
+/**
+ * The class representing the action taken by the fridge (purchases)
+ */
+public class Action {
+
+	private List<Integer> purchases; // The purchases
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param List<Integer> newPurchaseList - new list of purchases
+	 */
+	public Action (List<Integer> newPurchaseList) {
+		this.purchases = new ArrayList<Integer>(newPurchaseList);
+	}
+	
+	/**
+	 * Get the amount purchased for a particular item
+	 * 
+	 * @param int itemType - The type of item
+	 * 
+	 * @return the amount purchased for the item at index itemType. 
+	 * 			-1 if invalid item type
+	 */
+	public int getAmountPurchased (int itemType) {
+		if (itemType >= this.purchases.size()) {
+			return -1;
+		}
+		return this.purchases.get(itemType);
+	}
+	
+	@Override
+	public String toString() {
+		string toReturn; // The string to return
+		return toReturn;
+	}
+}
