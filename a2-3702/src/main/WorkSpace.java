@@ -84,7 +84,7 @@ public class WorkSpace {
 						rowSum += data[i][j];
 					}
 					scanner.close();
-					if (rowSum != 1) {
+					if (Math.round(rowSum * 100000) != 100000) {
 						reader.close();
 						throw new InputMismatchException(
 								"Row probabilities do not sum to 1.");
