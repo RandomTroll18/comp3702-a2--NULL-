@@ -49,7 +49,7 @@ public class ValueIterationAgent implements OrderingAgent {
 	 */
 	private void generateAllPossibleActions() {
 		double startTime, endTime, timeTaken; // Timer for generating states
-		Map<Integer, Integer> action; // Action
+		Map<Integer, Integer> action; // Action 
 		int maxSum = this.fridge.getMaxPurchase(); // The maximum amount we can purchase
 		int maxIndex = this.fridge.getMaxTypes() - 1; // The maximum index of an action
 		
@@ -75,7 +75,7 @@ public class ValueIterationAgent implements OrderingAgent {
 				for (int i = maxSum; i >= 0; --i) {
 					for (int j = 0; j < (maxIndex + 1); ++j) {
 						System.out.println("Starting with value: " + i + " on index " + j);
-						recursiveGeneration(1, maxSum, i, j, action);
+						recursiveGeneration(1, maxSum, i, j, action, this.fridge.getMaxPurchase());
 						for (int k = 0; k < (maxIndex + 1); ++k) {  // Reset list
 							action.put(k, 0);
 						}
@@ -90,9 +90,9 @@ public class ValueIterationAgent implements OrderingAgent {
 			break;
 		}
 		
-		System.out.println("Printing generated actions");
+		//System.out.println("Printing generated actions");
 		for (Action currentAction : possibleActions) {
-			System.out.println(currentAction.toString());
+			//System.out.println(currentAction.toString());
 		}
 	}
 	
@@ -105,8 +105,8 @@ public class ValueIterationAgent implements OrderingAgent {
 	 * @param int currentIndex - The current index we are looking at
 	 * @param Map<Integer, Integer> currentMap - Current map being modified
 	 */
-	private void recursiveGeneration (int generateType, int maxSum, int remaining, int currentIndex, Map<Integer, Integer> currentMap) {
-		int maxVal = this.fridge.getMaxItemsPerType(); // Maximum value
+	private void recursiveGeneration (int generateType, int maxSum, int remaining, int currentIndex, Map<Integer, Integer> currentMap, int maxVal) {
+		//int maxVal = this.fridge.getMaxItemsPerType(); //TODO add as parameter Maximum value
 		int localCurrentIndex = currentIndex; // The current index
 		
 		System.out.println("recursiveGeneration: maxSum: " + maxSum);
@@ -126,15 +126,34 @@ public class ValueIterationAgent implements OrderingAgent {
 				if (i >= maxVal) { // Too much remaining
 					System.out.println("Too much remaining");
 					currentMap.put(currentIndex, maxVal);
+					System.out.println("put in");
 					addToList(generateType, currentMap);
-					recursiveGeneration(generateType, maxSum - maxVal, maxSum - maxVal, localCurrentIndex + 1, currentMap);
+					System.out.println("added to list");
+					recursiveGeneration(generateType, maxSum - maxVal, maxSum - maxVal, localCurrentIndex + 1, currentMap, maxVal);
+				} else if (i == 0) { // We are done
+					clearFromCurrent(currentIndex, currentMap);
+					addToList(generateType, currentMap);
+					return;
 				} else { // Just the right amount
 					System.out.println("Just the right amount");
 					currentMap.put(currentIndex, i);
 					addToList(generateType, currentMap);
-					recursiveGeneration(generateType, maxSum - i, maxSum - i, localCurrentIndex + 1, currentMap);
+					recursiveGeneration(generateType, maxSum - i, maxSum - i, localCurrentIndex + 1, currentMap, maxVal);
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Set to 0 everything from index current to size of 
+	 * map
+	 * 
+	 * @param int current - The current index
+	 * @param Map<Integer, Integer> mapToClear - The map to clear
+	 */
+	private void clearFromCurrent(int current, Map<Integer, Integer> mapToClear) {
+		for (int i = current; i < mapToClear.size(); ++i) {
+			mapToClear.put(i, 0);
 		}
 	}
 	
@@ -154,8 +173,12 @@ public class ValueIterationAgent implements OrderingAgent {
 		case 0:
 			stateContainer = new State(toAdd);
 			if (!this.possibleStates.contains(stateContainer)) {
+				System.out.println("adding state");
 				this.possibleStates.add(stateContainer);
+			}	 else {
+				System.out.println("not added");
 			}
+			
 			break;
 		case 1:
 			actionContainer = new Action(toAdd);
@@ -179,14 +202,64 @@ public class ValueIterationAgent implements OrderingAgent {
 	 * Generate all the possible states
 	 */
 	private void generateAllPossibleStates() {
+		//TODO
 		double startTime, endTime, timeTaken; // Timer for generating states
+		Map<Integer, Integer> state; // Action 
+		int maxSum = this.fridge.getCapacity(); //TODO The maximum amount we can have in a state
+		int maxIndex = this.fridge.getMaxTypes() - 1; // The maximum index of a state
+		
+		System.out.println("Generating all possible states");
+		startTime = endTime = Global.currentTime(); /* Set the time */
+		state = new HashMap<Integer, Integer>();
+		
+		/* Generate zero case */
+		for (int i = 0; i < (maxIndex + 1); ++i) {
+			state.put(i, 0);
+		}
+		this.possibleStates.add(new State(state));
+		System.out.println("Size of state: " + state.size());
+		
+		while ((timeTaken = (endTime - startTime)) < 60) {
+			System.out.println("Current time taken: " + timeTaken);
+			if (this.fridge.getMaxTypes() <= 0) {
+				System.err.println("Invalid number of item types");
+				System.exit(10);
+			} else if (this.fridge.getMaxTypes() == 1) { // Only have 1 type of item
+				break;
+			} else { // Fridge has 2 or more types of items
+				for (int i = maxSum; i >= 0; --i) {
+					for (int j = 0; j < (maxIndex + 1); ++j) {
+						System.out.println("Starting with value: " + i + " on index " + j);
+						recursiveGeneration(0, maxSum, i, j, state, this.fridge.getMaxItemsPerType());
+						for (int k = 0; k < (maxIndex + 1); ++k) {  // Reset list
+							state.put(k, 0);
+						}
+					}
+					endTime = Global.currentTime();
+					if ((timeTaken = (endTime - startTime)) >= 60) {
+						break;
+					}
+				}	
+			}
+			endTime = Global.currentTime(); // Get current time
+			break;
+		}
+		
+		System.out.println("Printing generated states");
+		
+		
+		for (State currentState : possibleStates) {
+		
+			System.out.println(1);
+			System.out.println(currentState.getState().toString());
+		}
 	}
 	
 	/** Interface methods */
 	
 	public void doOfflineComputation() {
 		generateAllPossibleStates();
-		generateAllPossibleActions();
+		//generateAllPossibleActions();
 		generateAllPossibleConsumptions();
 	}
 	

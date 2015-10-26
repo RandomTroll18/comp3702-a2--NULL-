@@ -29,13 +29,14 @@ public class State {
 	public State (double cost, State parent, HashMap<Integer, Integer> state, HashSet<State> successors, HashMap<State, Integer> adjRewards) {
 		this.cost = cost;
 		this.parent = parent;
-		this.state = state;
+		this.state = new HashMap<Integer,Integer>(state);
 		this.successors = successors;
 		this.adjacentRewards = adjRewards;
 	}
 	
 	public State(Map<Integer, Integer> currentList) {
-		this.state = currentList;
+		this.state = new HashMap<Integer,Integer>(currentList);
+		
 	}
 	
 	
@@ -86,15 +87,21 @@ public class State {
 	
 	@Override
 	public int hashCode() {
-		return (parent.hashCode() * 3 + successors.hashCode()) * 17 + (state.hashCode() * 31);
+		return (17 + (state.hashCode() * 31));
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
-		State ob = (State) obj;
-		if (this.cost == ob.getCost() && this.successors.equals(ob.getSuccessors()) && this.parent.equals(ob.getParent()) && this.state.equals(ob.getState())) {
-			return true;
+		
+		if (!obj.getClass().equals(this.getClass())) {
+			return false;
 		}
+		System.out.println(this.state.toString());
+		System.out.println(((State)obj).getState().toString());
+		if (this.state.equals(((State)obj).getState())) {
+			
+			return true;
+		} 
 		
 		return false;
 	}
