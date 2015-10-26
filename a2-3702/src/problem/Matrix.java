@@ -85,4 +85,24 @@ public class Matrix {
 		return new Matrix(result);
 	}
 	
+	/*
+	 * Matrix addition
+	 * @require both this and b are of the same size n * m
+	 * @param Matrix b - matrix to add this to
+	 * @return Matrix c - result of operation
+	 * @return null - iff the two matrices are not the same size
+	 */
+	public Matrix add(Matrix b) {
+		if (this.getNumRows() != b.getNumRows() || this.getNumCols() != b.getNumCols()) {
+			return null;
+		}
+		double[][] result = new double[this.numRows][this.numCols];
+		for (int i = 0; i < numRows; i++) {
+			for (int j = 0; j < numCols; j++){
+				result[i][j] = this.get(i, j) + b.get(i, j);
+			}
+		}
+		return new Matrix(result);
+	}
+	
 }
