@@ -299,7 +299,11 @@ public class ValueIterationAgent implements OrderingAgent {
 	 * Find the optimal policy
 	 */
 	private void findOptimalPolicy () {
-		
+		// Need to find optimal policy here. Steps are as follows:
+		/*
+		 * Need to figure out matrices with probabilities (already have it)
+		 * Need to work out value function (which initially, something close to 0)
+		 */
 	}
 	
 	/** Interface methods */
