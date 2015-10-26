@@ -31,4 +31,59 @@ public class Consumption {
 		}
 		return this.consumption.get(itemType);
 	}
+	
+	/**
+	 * Get the total amount consumed
+	 * 
+	 * @return the total amount consumed
+	 */
+	public int totalConsumed() {
+		int result = 0; // The result
+		
+		for (int i = 0; i < this.consumption.size(); ++i) {
+			result += this.consumption.get(i);
+		}
+		return result;
+	}
+	
+	/**
+	 * Get the map of consumptions
+	 * 
+	 * @return the map of consumptions
+	 */
+	public Map<Integer, Integer> getConsumptions () {
+		return this.consumption;
+	}
+	
+	
+	/* Overriden methods */
+	
+	@Override
+	public int hashCode () {
+		return this.consumption.hashCode();
+	}
+	
+	@Override
+	public boolean equals (Object obj) {
+		Consumption toCompare;
+		
+		if (!obj.getClass().equals(this.getClass())) {
+			return false;
+		}
+		
+		toCompare = (Consumption)obj;
+		
+		if (!this.consumption.equals(toCompare.getConsumptions())) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public String toString () {
+		String toReturn; // The string to return
+		toReturn = this.consumption.toString();
+		return toReturn;
+	}
 }

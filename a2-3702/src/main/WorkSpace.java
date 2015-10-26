@@ -145,6 +145,7 @@ public class WorkSpace {
 			spec = new ProblemSpec(inputFileName); // Get the problem spec
 			simulator = new Simulator(spec);
 			
+			
 			switch (fridge.getName()) { // Need to decide what agent we'll use
 			case "tiny":
 			case "small":
@@ -152,7 +153,10 @@ public class WorkSpace {
 				agent = new ValueIterationAgent(spec);
 				System.out.println("Using Value Iteration");
 				break;
-			case "large":
+			case "large": /* Testing value iteration */
+				agent = new ValueIterationAgent(spec);
+				System.out.println("Testing Value Iteration On Large");
+				break;
 			case "super": // Use Monte Carlo
 				agent = new MonteCarloAgent(spec);
 				System.out.println("Using Monte Carlo Tree Search");

@@ -96,14 +96,16 @@ public class State {
 		if (!obj.getClass().equals(this.getClass())) {
 			return false;
 		}
-		System.out.println(this.state.toString());
-		System.out.println(((State)obj).getState().toString());
 		if (this.state.equals(((State)obj).getState())) {
-			
 			return true;
 		} 
 		
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return this.state.toString();
 	}
 	
 }

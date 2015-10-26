@@ -19,9 +19,9 @@ public class Action {
 	}
 	
 	/**
-	 * Get the list of purchases
+	 * Get the map of purchases
 	 * 
-	 * @return the list of purchases in this class
+	 * @return the map of purchases in this class
 	 */
 	public Map<Integer, Integer> getPurchases () {
 		return this.purchases;
@@ -40,6 +40,20 @@ public class Action {
 			return -1;
 		}
 		return this.purchases.get(itemType);
+	}
+	
+	/**
+	 * Get the total amount purchased
+	 * 
+	 * @return the total amount purchased
+	 */
+	public int totalConsumed() {
+		int result = 0; // The result
+		
+		for (int i = 0; i < this.purchases.size(); ++i) {
+			result += this.purchases.get(i);
+		}
+		return result;
 	}
 	
 	@Override
