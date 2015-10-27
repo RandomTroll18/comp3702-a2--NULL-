@@ -321,12 +321,85 @@ public class ValueIterationAgent implements OrderingAgent {
 		 * TODO: Value function (states) - the total amount of items
 		 * TODO: Reward function (states) - capacity - total amount of items
 		 * TODO: For every state, check each valid action
-		 * TODO: New value function = reward function + discount * (Probabilities * value function)
+		 * TODO: New value function = sumof(probabibility of one type of food * discount factor * 
+		 * value(s'))
 		 * New value function = list of values for each item
 		 * Actual new value = sum of that list
 		 * Pick the largest value
 		 * TODO: Keep calculating new value function, until difference of previous value function is 
 		 * miniscule
+		 * TODO make sure purched amount does not exceed capacity
+		 * TODO endstate - make sure that the amount that the user ate does not  exceed the maximum for the type
+		 * Pseudo-code
+		 * 
+		 * while (still have time - <= 5 minutes)
+		 * Map<Action, double> differentValues
+		 * foreach (State current : possibleStates)
+		 * 		foreach (Action currentAction : possibleActions) - if invalid action - continue
+		 * 			differentValues.set(currentAction, valueGeneration(current, currentAction)
+		 * 		current.value = differentValues.maxKey;
+		 * 		policy.set(current, differentValues.maxKey)
+		 */
+		double startTime, currentTime;
+		startTime = Global.currentTime();
+		
+		
+		
+		currentTime = Global.currentTime();
+			while ((currentTime - startTime) <= 300 ) {
+				for(State currentState: possibleStates) {
+					for(Action currentAction: possibleActions) {
+						if (!validAction(currentAction)) {
+							continue;
+						}
+						differentValues.set(currentAction, valueGeneration(currentState, currentAction);
+					}
+					currentState.getCost() = differentValues.maxKey;
+				}
+				currentTime = Global.currentTime();
+			}
+			
+		/* valueGeneration (state, action)
+		 * 		double maxValue;
+		 * 		double currentVal;
+		 * 		List<double> currentProb
+		 * 		foreach (State possible : possibleStates)
+		 * 			currentProb = Transition(state, action, possible);
+		 * 			currentVal = sumof(currentProb(i) * reward(possible) + discount factor * value(possible))
+		 * 			if (currentVal > maxVal) maxValue = currentVal
+		 * 		
+		 * 		return maxValue
+		 */
+		public double valueGeneration(State state, Action action) {
+			double maxValue;
+			double currentVal;
+			List<Double> currentProb = new ArrayList<Double>();
+			for (State possible : possibleStates) {
+				currentProb = transition(state, action, possible);
+				
+			}
+		} 
+		/* Transition (current, action, end)
+		 * 		List<double> probs
+		 * 		double currentProb
+		 * 		Matrix currentMatrix;
+		 * 		int row;
+		 * 		int column;
+		 * 		for (int i = 0; i < current.size(); ++i)
+		 * 			currentProb = 0.0;
+		 * 			row = current.get(i) + action.get(i);
+		 * 			column = (current.get(i) + action.get(i)) - end.get(i);
+		 * 			currentMatrix = probabilities.get(i); 
+		 *			if (end.get(i) > 0)
+		 *				currentProb = currentMatrix.get(row, column);
+		 *			else
+		 *				for (int j = column; j < currentMatrix.numCols(); ++j)
+		 *					currentProb += currentMatrix.get(row, j);
+		 *			probs.add(currentProb);
+		 *		return probs
+		 *
+		 *
+		 *
 		 */
 	}
 	
