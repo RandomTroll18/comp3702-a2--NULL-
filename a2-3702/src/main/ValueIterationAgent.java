@@ -277,20 +277,27 @@ public class ValueIterationAgent implements OrderingAgent {
 		Action largestValue = null; // The largest value
 		
 		for (Action current : actions.keySet()) {
-			if (largestValue == null 
-						|| (actions.get(largestValue) < actions.get(current))) {
+			if (largestValue == null || (actions.get(largestValue) < actions.get(current))) {
 				largestValue = current;
 			}
 		}
 		
 		return largestValue;
 	}
-			
-	private Double valueGeneration(State state, Action action) {
+	
+	/**
+	 * Value generation
+	 * 
+	 * @param state - The current state
+	 * @param action - The current action
+	 * @param Set<State> lookup - The set of states we are looking up
+	 * @return The total value for that state
+	 */
+	private Double valueGeneration(State state, Action action, Set<State> lookup) {
 		Double maxValue = null; // The maximum value
 		double currentVal = 0.0; // The current value
 		List<Double> currentProb = new ArrayList<Double>();
-		for (State possible : possibleStates) {
+		for (State possible : this.possibleStates) {
 			currentProb = transition(state, action, possible);
 			for (int i = 0; i < currentProb.size(); ++i) {
 				currentVal += currentProb.get(i) 
@@ -301,7 +308,9 @@ public class ValueIterationAgent implements OrderingAgent {
 			} else { // Need to sum up these values
 				maxValue += currentVal;
 			}
+			System.err.println("Current value: " + currentVal);
 		}
+		System.err.println("Max value: " + maxValue);
 		return maxValue;
 	} 
 		
@@ -321,6 +330,38 @@ public class ValueIterationAgent implements OrderingAgent {
 		int total = sumOf(current.getState()); // The total number of items
 		
 		return total - this.fridge.getCapacity();
+	}
+	
+	/**
+	 * Check if the end state is valid. This means check that 
+	 * the difference between the sums of both states are not 
+	 * greater than total number of items in fridge * maximum 
+	 * consumption of one item.
+	 * 
+	 * Will also check if the difference between the contents 
+	 * of both states for each item is not greater than the maximum
+	 * consumption
+	 * 
+	 * @param currentState The current state
+	 * @param endState The end state
+	 * @return true if the end state is valid. false otherwise
+	 */
+	private boolean IsValidEndState (State currentState, State endState) {
+		/* The sums */
+		int currentSum = sumOf(currentState.getState());
+		int endSum = sumOf(endState.getState());
+		
+		if (Math.abs(currentSum - endSum) > (this.fridge.getMaxTypes() * this.fridge.getMaxItemsPerType())) {
+			return false;
+		}
+		
+		for (int i = 0; i < currentState.getState().size(); ++i) {
+			if (Math.abs(currentSum - endSum) > this.fridge.getMaxItemsPerType()) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 		
 		
@@ -349,14 +390,13 @@ public class ValueIterationAgent implements OrderingAgent {
 			row = currentStock.get(i) + purchase.get(i);
 			column = row - possible.getState().get(i);
 			currentMatrix = this.probabilities.get(i);
-			if (column < 0) { // Invalid state
+			if (column < 0 || column >= currentMatrix.getNumCols()
+						|| row >= currentMatrix.getNumRows()) { // Invalid state
+				probs.add(0.0);
 				continue;
 			}
 			if (possibleStock.get(i) > 0 || 
 						(possibleStock.get(i) == 0 && column == 0)) { // Sufficiently provided
-				System.out.println("Current Matrix: " + currentMatrix.toString());
-				System.out.println("Row: " + row);
-				System.out.println("Column: " + column);
 				currentProb = currentMatrix.get(row, column);
 			} else if (possibleStock.get(i) == 0 && column > 0) { 
 				// Range of probabilities because user could have eaten plenty
@@ -378,7 +418,7 @@ public class ValueIterationAgent implements OrderingAgent {
 	 * @return true if currentAction leads to state having more than the 
 	 * capacity of the fridge. false otherwise
 	 */
-	private boolean validAction(Action currentAction, State currentState) {
+	private boolean validAction (Action currentAction, State currentState) {
 		int sumOfAction = sumOf(currentAction.getPurchases());
 		int sumOfState = sumOf(currentState.getState());
 		
@@ -439,7 +479,10 @@ public class ValueIterationAgent implements OrderingAgent {
 		for (State current : newPolicy.keySet()) {
 			for (State old : this.policy.keySet()) {
 				if (current.equals(old)) {
-					currDiff = Math.abs(current.getCost() - old.getCost());
+					System.err.println("Policy temporary cost: " + old.getTemporaryCost());
+					System.err.println("Policy actual cost: "+ old.getCost());
+					System.err.println("New Policy temporary cost: " + current.getTemporaryCost());
+					currDiff = Math.abs(current.getTemporaryCost() - old.getCost());
 					if (minDiff == null || currDiff <= minDiff) {
 						minDiff = currDiff;
 					}
@@ -469,9 +512,14 @@ public class ValueIterationAgent implements OrderingAgent {
 		
 		for (State newState : newPolicy.keySet()) {
 			current = new State(newState.getState());
-			current.setCost(newState.getCost());
+			current.setCost(newState.getTemporaryCost());
 			currentAction = new Action(newPolicy.get(newState).getPurchases());
 			this.policy.put(current, currentAction);
+		}
+		
+		for (State addedState: this.possibleStates) {
+			System.out.println("Previous value: " + addedState.getCost());
+			System.out.println("Previousy temp value: " + addedState.getTemporaryCost());
 		}
 	}
 	
@@ -479,6 +527,8 @@ public class ValueIterationAgent implements OrderingAgent {
 	
 	public void doOfflineComputation() {
 		double startTime, currentTime; // Timer things
+		boolean alreadyRunThrough = false; // Record if we've already done one run
+		Set<State> toLookup; // The states to lookup
 		Map<Action, Double> differentValues = new HashMap<Action, Double>(); // The different values for the current state
 		Map<State, Action> newPolicy = new HashMap<State, Action>(); // New policy
 		State newState; // New state for new policy
@@ -494,25 +544,34 @@ public class ValueIterationAgent implements OrderingAgent {
 		startTime = Global.currentTime();
 		currentTime = Global.currentTime();
 		while ((currentTime - startTime) <= this.timeRemaining) {
-			for (State currentState: possibleStates) {
+			if (alreadyRunThrough) {
+				toLookup = this.policy.keySet();
+			} else {
+				toLookup = this.possibleStates;
+			}
+			for (State currentState: toLookup) {
+				System.out.println("Current state being looked up: " + currentState.getCost());
 				differentValues.clear(); // Reset different values
-				for (Action currentAction: possibleActions) {
+				for (Action currentAction: this.possibleActions) {
 					if (!validAction(currentAction, currentState)) {
 						continue;
 					}
-					differentValues.put(currentAction, valueGeneration(currentState, currentAction));
+					differentValues.put(currentAction, valueGeneration(currentState, currentAction, toLookup));
 				}
 				best = maxArg(differentValues);
 				if (isBetterPolicy(currentState, differentValues.get(best))) {
 					newState = new State(currentState.getState());
-					System.out.println("New State Cost (Before Set): " + newState.getCost());
-					newState.setCost(differentValues.get(best));
-					System.out.println("New State Cost (After Set): " + newState.getCost());
+					System.out.println("New State Cost (Before Set): " + newState.getTemporaryCost());
+					newState.setTemporaryCost(differentValues.get(best));
+					System.out.println("New State Cost (After Set): " + newState.getTemporaryCost());
 					newPolicy.put(newState, best);
 				}
 			}
 			if (CheckDifference(0.1, newPolicy)) {
 				copyPolicy(newPolicy);
+				newPolicy.clear();
+				System.err.println("Run through already");
+				alreadyRunThrough = true;
 			} else {
 				currentTime = Global.currentTime();
 				break;

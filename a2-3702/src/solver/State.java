@@ -13,6 +13,7 @@ import java.util.Set;
  */
 public class State {
 	private double cost;
+	private double temporaryCost; // Temporary cost for valueiteration
 	private double value; // The value of this state
 	private Map<State, Integer> adjacentRewards;
 	private Set<State> successors;
@@ -47,12 +48,20 @@ public class State {
 		return this.value;
 	}
 	
+	public double getTemporaryCost() {
+		return this.temporaryCost;
+	}
+	
 	
 	/*
 	 * Setters
 	 */
 	public void setRewards(HashMap<State, Integer> rewards) {
 		this.adjacentRewards = rewards;
+	}
+	
+	public void setTemporaryCost(double tempCost) {
+		this.temporaryCost = tempCost;
 	}
 		
 	public void setCost(double cost) {

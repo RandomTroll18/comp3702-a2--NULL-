@@ -2,20 +2,20 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="recursiveGeneration" key="selection"/>
+		<item value="transition" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
-			<item value="generateAllPossibleConsumptions"/>
-			<item value="recursiveGeneration"/>
-			<item value="generateAllPossibleStates"/>
-			<item value="numSimulations"/>
-			<item value="System"/>
-			<item value="Time"/>
-			<item value="Time Taken"/>
-			<item value="Console"/>
+			<item value="transition"/>
+			<item value="maArg"/>
+			<item value="maxArg"/>
+			<item value="transition("/>
+			<item value="maxARg"/>
+			<item value="transition ("/>
+			<item value="transition "/>
+			<item value="ValidA"/>
 		</list>
 		<list key="replacehistory">
 		</list>
