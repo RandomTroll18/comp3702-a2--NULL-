@@ -286,117 +286,88 @@ public class ValueIterationAgent implements OrderingAgent {
 		return largestValue;
 	}
 			
-		/* valueGeneration (state, action)
-		 * 		double maxValue;
-		 * 		double currentVal;
-		 * 		List<double> currentProb
-		 * 		foreach (State possible : possibleStates)
-		 * 			currentProb = Transition(state, action, possible);
-		 * 			currentVal = sumof(currentProb(i) * reward(possible) + discount factor * value(possible))
-		 * 			if (currentVal > maxVal) maxValue = currentVal
-		 * 		
-		 * 		return maxValue
-		 */
-		private Double valueGeneration(State state, Action action) {
-			Double maxValue = null; // The maximum value
-			double currentVal = 0.0; // The current value
-			List<Double> currentProb = new ArrayList<Double>();
-			for (State possible : possibleStates) {
-				currentProb = transition(state, action, possible);
-				for (int i = 0; i < currentProb.size(); ++i) {
-					currentVal += currentProb.get(i) 
-								* (reward(possible) + this.spec.getDiscountFactor() * possible.getCost());
-				}
-				if (maxValue == null) { // First time generating value
-					maxValue = currentVal;
-				} else { // Need to sum up these values
-					maxValue += currentVal;
+	private Double valueGeneration(State state, Action action) {
+		Double maxValue = null; // The maximum value
+		double currentVal = 0.0; // The current value
+		List<Double> currentProb = new ArrayList<Double>();
+		for (State possible : possibleStates) {
+			currentProb = transition(state, action, possible);
+			for (int i = 0; i < currentProb.size(); ++i) {
+				currentVal += currentProb.get(i) 
+							* (reward(possible) + this.spec.getDiscountFactor() * possible.getCost());
+			}
+			if (maxValue == null) { // First time generating value
+				maxValue = currentVal;
+			} else { // Need to sum up these values
+				maxValue += currentVal;
+			}
+		}
+		return maxValue;
+	} 
+		
+		
+	/**
+	 * Reward function for a state. Currently, our reward 
+	 * is simply the total number of items in the state minus 
+	 * the capacity of the fridge.
+	 * 
+	 * This means that we get the highest reward if we 
+	 * fully stock our fridge
+	 * 
+	 * @param current - The current state
+	 * @return The immediate reward for being in this state
+	 */
+	private double reward (State current) {
+		int total = sumOf(current.getState()); // The total number of items
+		
+		return total - this.fridge.getCapacity();
+	}
+		
+		
+	/**
+	 * Transition function. Currently, we only get the list of 
+	 * probabilities of each item.
+	 * 
+	 * @param current - The current state
+	 * @param action - The action
+	 * @param possible - The possible state
+	 * @return The list of probabilities where each index refers to 
+	 * the probability of that item
+	 */
+	private List<Double> transition (State current, Action action, State possible) {
+		List<Double> probs = new ArrayList<Double>(); // Probabilities
+		Map<Integer, Integer> currentStock, purchase, possibleStock; // Maps
+		double currentProb; // The current probability
+		Matrix currentMatrix; // The current probability matrix
+		int row, column; // The row and column
+		
+		for (int i = 0; i < current.getState().size(); ++i) {
+			currentProb = 0.0;
+			currentStock = current.getState();
+			purchase = action.getPurchases();
+			possibleStock = possible.getState();
+			row = currentStock.get(i) + purchase.get(i);
+			column = row - possible.getState().get(i);
+			currentMatrix = this.probabilities.get(i);
+			if (column < 0) { // Invalid state
+				continue;
+			}
+			if (possibleStock.get(i) > 0 || 
+						(possibleStock.get(i) == 0 && column == 0)) { // Sufficiently provided
+				System.out.println("Current Matrix: " + currentMatrix.toString());
+				System.out.println("Row: " + row);
+				System.out.println("Column: " + column);
+				currentProb = currentMatrix.get(row, column);
+			} else if (possibleStock.get(i) == 0 && column > 0) { 
+				// Range of probabilities because user could have eaten plenty
+				for (int j = column; j < currentMatrix.getNumCols(); ++j) {
+					currentProb += currentMatrix.get(row, j);
 				}
 			}
-			return maxValue;
-		} 
-		
-		
-		/**
-		 * Reward function for a state. Currently, our reward 
-		 * is simply the total number of items in the state minus 
-		 * the capacity of the fridge.
-		 * 
-		 * This means that we get the highest reward if we 
-		 * fully stock our fridge
-		 * 
-		 * @param current - The current state
-		 * @return The immediate reward for being in this state
-		 */
-		private double reward (State current) {
-			int total = sumOf(current.getState()); // The total number of items
-			
-			return total - this.fridge.getCapacity();
+			probs.add(currentProb);
 		}
-		
-		/* Transition (current, action, end)
-		 * 		List<double> probs
-		 * 		double currentProb
-		 * 		Matrix currentMatrix;
-		 * 		int row;
-		 * 		int column;
-		 * 		for (int i = 0; i < current.size(); ++i)
-		 * 			currentProb = 0.0;
-		 * 			row = current.get(i) + action.get(i);
-		 * 			column = (current.get(i) + action.get(i)) - end.get(i);
-		 * 			currentMatrix = probabilities.get(i); 
-		 *			if (end.get(i) > 0)
-		 *				currentProb = currentMatrix.get(row, column);
-		 *			else
-		 *				for (int j = column; j < currentMatrix.numCols(); ++j)
-		 *					currentProb += currentMatrix.get(row, j);
-		 *			probs.add(currentProb);
-		 *		return probs
-		 *
-		 *
-		 *
-		 */
-		/**
-		 * Transition function. Currently, we only get the list of 
-		 * probabilities of each item.
-		 * 
-		 * @param current - The current state
-		 * @param action - The action
-		 * @param possible - The possible state
-		 * @return The list of probabilities where each index refers to 
-		 * the probability of that item
-		 */
-		private List<Double> transition (State current, Action action, State possible) {
-			List<Double> probs = new ArrayList<Double>(); // Probabilities
-			Map<Integer, Integer> currentStock, purchase, possibleStock; // Maps
-			double currentProb; // The current probability
-			Matrix currentMatrix; // The current probability matrix
-			int row, column; // The row and column
-			
-			for (int i = 0; i < current.getState().size(); ++i) {
-				currentProb = 0.0;
-				currentStock = current.getState();
-				purchase = action.getPurchases();
-				possibleStock = possible.getState();
-				row = currentStock.get(i) + purchase.get(i);
-				column = row - possible.getState().get(i);
-				currentMatrix = this.probabilities.get(i);
-				if (column < 0) { // Invalid state
-					continue;
-				}
-				if (possibleStock.get(i) > 0 || 
-							(possibleStock.get(i) == 0 && column == 0)) { // Sufficiently provided
-					currentProb = currentMatrix.get(row, column);
-				} else if (possibleStock.get(i) == 0 && column > 0) { 
-					// Range of probabilities because user could have eaten plenty
-					for (int j = column; j < currentMatrix.getNumCols(); ++j) {
-						currentProb += currentMatrix.get(row, j);
-					}
-				}
-				probs.add(currentProb);
-			}
-			return probs;
-		}
+		return probs;
+	}
 	
 	/**
 	 * Check if the given action is valid or not. This means 
@@ -502,10 +473,6 @@ public class ValueIterationAgent implements OrderingAgent {
 			currentAction = new Action(newPolicy.get(newState).getPurchases());
 			this.policy.put(current, currentAction);
 		}
-		
-		for (State currentState : this.policy.keySet()) {
-			System.out.println("State: " + currentState.toString() + " with action: " + this.policy.get(currentState).toString());
-		}
 	}
 	
 	/** Interface methods */
@@ -522,35 +489,13 @@ public class ValueIterationAgent implements OrderingAgent {
 		System.err.println("Done generating");
 		System.err.println("Number of States: " + this.possibleStates.size());
 		System.err.println("Number of Actions: " + this.possibleActions.size());
-		/*
-		 * TODO: Value function (states) - the total amount of items
-		 * TODO: Reward function (states) - capacity - total amount of items
-		 * TODO: For every state, check each valid action
-		 * TODO: New value function = sumof(probabibility of one type of food * discount factor * 
-		 * value(s'))
-		 * New value function = list of values for each item
-		 * Actual new value = sum of that list
-		 * Pick the largest value
-		 * TODO: Keep calculating new value function, until difference of previous value function is 
-		 * miniscule
-		 * TODO make sure purched amount does not exceed capacity
-		 * TODO endstate - make sure that the amount that the user ate does not  exceed the maximum for the type
-		 * Pseudo-code
-		 * 
-		 * while (still have time - <= 5 minutes)
-		 * Map<Action, double> differentValues
-		 * foreach (State current : possibleStates)
-		 * 		foreach (Action currentAction : possibleActions) - if invalid action - continue
-		 * 			differentValues.set(currentAction, valueGeneration(current, currentAction)
-		 * 		current.value = differentValues.maxKey;
-		 * 		policy.set(current, differentValues.maxKey)
-		 */
 		
 		/* Start doing value iteration stuff */
 		startTime = Global.currentTime();
 		currentTime = Global.currentTime();
 		while ((currentTime - startTime) <= this.timeRemaining) {
 			for (State currentState: possibleStates) {
+				differentValues.clear(); // Reset different values
 				for (Action currentAction: possibleActions) {
 					if (!validAction(currentAction, currentState)) {
 						continue;
@@ -560,13 +505,13 @@ public class ValueIterationAgent implements OrderingAgent {
 				best = maxArg(differentValues);
 				if (isBetterPolicy(currentState, differentValues.get(best))) {
 					newState = new State(currentState.getState());
-					System.out.println("New State: " + newState.toString());
-					System.out.println("Best Action: " + best.getPurchases().toString());
+					System.out.println("New State Cost (Before Set): " + newState.getCost());
 					newState.setCost(differentValues.get(best));
-					this.policy.put(newState, best);
+					System.out.println("New State Cost (After Set): " + newState.getCost());
+					newPolicy.put(newState, best);
 				}
 			}
-			if (CheckDifference(1.0, newPolicy)) {
+			if (CheckDifference(0.1, newPolicy)) {
 				copyPolicy(newPolicy);
 			} else {
 				currentTime = Global.currentTime();

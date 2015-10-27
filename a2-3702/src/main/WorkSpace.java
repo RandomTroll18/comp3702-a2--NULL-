@@ -190,8 +190,6 @@ public class WorkSpace {
 					
 					List<Integer> shopping = agent.generateShoppingList(
 							simulator.getInventory(), spec.getNumWeeks() - (j + 1));
-					System.err.println("Inventory: " + simulator.getInventory().toString());
-					System.err.println("Shopping: " + shopping.toString());
 					simulator.simulateStep(shopping);
 					
 					endSimulatorTime = Global.currentTime();
