@@ -308,9 +308,7 @@ public class ValueIterationAgent implements OrderingAgent {
 			} else { // Need to sum up these values
 				maxValue += currentVal;
 			}
-			System.err.println("Current value: " + currentVal);
 		}
-		System.err.println("Max value: " + maxValue);
 		return maxValue;
 	} 
 		
@@ -479,9 +477,6 @@ public class ValueIterationAgent implements OrderingAgent {
 		for (State current : newPolicy.keySet()) {
 			for (State old : this.policy.keySet()) {
 				if (current.equals(old)) {
-					System.err.println("Policy temporary cost: " + old.getTemporaryCost());
-					System.err.println("Policy actual cost: "+ old.getCost());
-					System.err.println("New Policy temporary cost: " + current.getTemporaryCost());
 					currDiff = Math.abs(current.getTemporaryCost() - old.getCost());
 					if (minDiff == null || currDiff <= minDiff) {
 						minDiff = currDiff;
@@ -516,11 +511,6 @@ public class ValueIterationAgent implements OrderingAgent {
 			currentAction = new Action(newPolicy.get(newState).getPurchases());
 			this.policy.put(current, currentAction);
 		}
-		
-		for (State addedState: this.possibleStates) {
-			System.out.println("Previous value: " + addedState.getCost());
-			System.out.println("Previousy temp value: " + addedState.getTemporaryCost());
-		}
 	}
 	
 	/** Interface methods */
@@ -550,7 +540,6 @@ public class ValueIterationAgent implements OrderingAgent {
 				toLookup = this.possibleStates;
 			}
 			for (State currentState: toLookup) {
-				System.out.println("Current state being looked up: " + currentState.getCost());
 				differentValues.clear(); // Reset different values
 				for (Action currentAction: this.possibleActions) {
 					if (!validAction(currentAction, currentState)) {
@@ -561,16 +550,13 @@ public class ValueIterationAgent implements OrderingAgent {
 				best = maxArg(differentValues);
 				if (isBetterPolicy(currentState, differentValues.get(best))) {
 					newState = new State(currentState.getState());
-					System.out.println("New State Cost (Before Set): " + newState.getTemporaryCost());
 					newState.setTemporaryCost(differentValues.get(best));
-					System.out.println("New State Cost (After Set): " + newState.getTemporaryCost());
 					newPolicy.put(newState, best);
 				}
 			}
 			if (CheckDifference(0.1, newPolicy)) {
 				copyPolicy(newPolicy);
 				newPolicy.clear();
-				System.err.println("Run through already");
 				alreadyRunThrough = true;
 			} else {
 				currentTime = Global.currentTime();
