@@ -37,5 +37,15 @@ public class Matrix {
 	public int getNumCols() {
 		return this.numCols;
 	}
+	
+	@Override
+	public String toString() {
+		String toReturn = "";
+		
+		for (int i = 0; i < this.numRows; ++i) {
+			toReturn += this.data.get(i).toString() + System.lineSeparator();
+		}
+		return toReturn;
+	}
 
 }

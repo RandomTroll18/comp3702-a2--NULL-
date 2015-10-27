@@ -184,13 +184,14 @@ public class WorkSpace {
 				agent.doOfflineComputation();
 				Global.setEndTime();
 				Global.checkTime();
-				
 				for (int j = 0; j < spec.getNumWeeks(); j++) {
 					/* We have one minute for shopping */
 					startSimulatorTime = Global.currentTime();
 					
 					List<Integer> shopping = agent.generateShoppingList(
 							simulator.getInventory(), spec.getNumWeeks() - (j + 1));
+					System.err.println("Inventory: " + simulator.getInventory().toString());
+					System.err.println("Shopping: " + shopping.toString());
 					simulator.simulateStep(shopping);
 					
 					endSimulatorTime = Global.currentTime();

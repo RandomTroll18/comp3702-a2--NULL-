@@ -114,6 +114,7 @@ public class Simulator {
 			sum += i;
 		}
 		if (sum > fridge.getCapacity()) {
+			System.out.println("Tempstate: " + tempState.toString());
 			throw new IllegalArgumentException("Fridge capacity exceeded");
 		}
 		shoppingHistory.add(new ArrayList<Integer>(shopping));

@@ -13,6 +13,7 @@ import java.util.Set;
  */
 public class State {
 	private double cost;
+	private double value; // The value of this state
 	private Map<State, Integer> adjacentRewards;
 	private Set<State> successors;
 	private State parent;
@@ -36,7 +37,14 @@ public class State {
 	
 	public State(Map<Integer, Integer> currentList) {
 		this.state = new HashMap<Integer,Integer>(currentList);
-		
+	}
+	
+	public void setValue(double newValue) {
+		this.value = newValue;
+	}
+	
+	public double getValue() {
+		return this.value;
 	}
 	
 	
