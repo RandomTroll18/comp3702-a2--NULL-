@@ -317,6 +317,17 @@ public class ValueIterationAgent implements OrderingAgent {
 		System.err.println("Number of Actions: " + this.possibleActions.size());
 		System.err.println("Number of Consumptions: " + this.possibleConsumptions.size());
 		//printImportantValues(2);
+		/*
+		 * TODO: Value function (states) - the total amount of items
+		 * TODO: Reward function (states) - capacity - total amount of items
+		 * TODO: For every state, check each valid action
+		 * TODO: New value function = reward function + discount * (Probabilities * value function)
+		 * New value function = list of values for each item
+		 * Actual new value = sum of that list
+		 * Pick the largest value
+		 * TODO: Keep calculating new value function, until difference of previous value function is 
+		 * miniscule
+		 */
 	}
 	
 	public List<Integer> generateShoppingList(List<Integer> inventory,
