@@ -20,7 +20,7 @@ import solver.OrderingAgent;
  */
 public class WorkSpace {
 	
-	private final int NUM_SIMULATIONS = 1; // The number of simulations to run
+	private final int NUM_SIMULATIONS = 10; // The number of simulations to run
 	
 	private String outputFileName; // The file to output to
 	private String inputFileName; // The file to read from
@@ -144,27 +144,8 @@ public class WorkSpace {
 		try {
 			spec = new ProblemSpec(inputFileName); // Get the problem spec
 			simulator = new Simulator(spec);
-			
-			
-			switch (fridge.getName()) { // Need to decide what agent we'll use
-			case "tiny":
-			case "small":
-			case "medium": // Use Value Iteration
-				agent = new ValueIterationAgent(spec);
-				System.out.println("Using Value Iteration");
-				break;
-			case "large": /* Testing value iteration */
-				agent = new ValueIterationAgent(spec);
-				System.out.println("Testing Value Iteration On Large");
-				break;
-			case "super": // Use Monte Carlo
-				agent = new MonteCarloAgent(spec);
-				System.out.println("Using Monte Carlo Tree Search");
-				break;
-			default: // Unknown
-				System.err.println("Unknown fridge type. Exiting");
-				System.exit(29);
-			}
+			/* Use Value Iteration. No time for Monte Carlo */
+			agent = new ValueIterationAgent(spec);
 			
 			/* 
 			 * Run for a number of simulations. Not the same as number of weeks.

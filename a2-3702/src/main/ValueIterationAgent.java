@@ -23,6 +23,7 @@ public class ValueIterationAgent implements OrderingAgent {
     private Set<Action> possibleActions; // All possible actions
     private Set<Consumption> possibleConsumptions; // All possible consumptions
     private Map<State, Action> policy; // The policy
+    private boolean calculated = false; // Record if we've already calculated our policies
 	
 	/**
 	 * Constructor
@@ -513,9 +514,10 @@ public class ValueIterationAgent implements OrderingAgent {
 		}
 	}
 	
-	/** Interface methods */
-	
-	public void doOfflineComputation() {
+	/**
+	 * Generate optimal policy
+	 */
+	private void generateOptimalPolicy () {
 		double startTime, currentTime; // Timer things
 		boolean alreadyRunThrough = false; // Record if we've already done one run
 		Set<State> toLookup; // The states to lookup
@@ -524,13 +526,6 @@ public class ValueIterationAgent implements OrderingAgent {
 		State newState; // New state for new policy
 		Action best; // The best action
 		
-		generateAllPossibleStates();
-		generateAllPossibleActions();
-		System.err.println("Done generating");
-		System.err.println("Number of States: " + this.possibleStates.size());
-		System.err.println("Number of Actions: " + this.possibleActions.size());
-		
-		/* Start doing value iteration stuff */
 		startTime = Global.currentTime();
 		currentTime = Global.currentTime();
 		while ((currentTime - startTime) <= this.timeRemaining) {
@@ -563,6 +558,19 @@ public class ValueIterationAgent implements OrderingAgent {
 				break;
 			}
 		}
+	}
+	
+	/** Interface methods */
+	
+	public void doOfflineComputation() {
+		if (this.calculated) { // Already calculated
+			return;
+		}
+		generateAllPossibleStates();
+		generateAllPossibleActions();
+		generateOptimalPolicy();
+		
+		this.calculated = true;
 	}
 
 	public List<Integer> generateShoppingList(List<Integer> inventory,
