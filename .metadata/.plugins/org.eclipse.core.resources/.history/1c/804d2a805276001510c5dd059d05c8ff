@@ -1,9 +1,0 @@
-package main;
-
-import java.util.*;
-import solver.OrderingAgent;
-
-public class MonteCarloAgent implements OrderingAgent {
-
-	
-}

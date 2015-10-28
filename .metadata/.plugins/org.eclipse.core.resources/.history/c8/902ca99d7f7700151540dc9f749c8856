@@ -1,9 +1,0 @@
-package solver;
-
-/**
- * Class representing the amount that the user 
- * wants to consume
- */
-public class Consumption {
-
-}
