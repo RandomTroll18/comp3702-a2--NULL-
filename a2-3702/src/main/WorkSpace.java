@@ -20,7 +20,7 @@ import solver.OrderingAgent;
  */
 public class WorkSpace {
 	
-	private final int NUM_SIMULATIONS = 10; // The number of simulations to run
+	private final int NUM_SIMULATIONS = 1; // The number of simulations to run
 	
 	private String outputFileName; // The file to output to
 	private String inputFileName; // The file to read from

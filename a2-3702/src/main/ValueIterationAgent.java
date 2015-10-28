@@ -46,10 +46,9 @@ public class ValueIterationAgent implements OrderingAgent {
 	 * Generate all the possible states
 	 */
 	private void generateAllPossibleStates() {
-		//TODO
 		double startTime, endTime; // Timer for generating states
 		Map<Integer, Integer> state; // Action 
-		int maxSum = this.fridge.getCapacity(); //TODO The maximum amount we can have in a state
+		int maxSum = this.fridge.getCapacity(); // The maximum amount we can have in a state
 		int maxIndex = this.fridge.getMaxTypes() - 1; // The maximum index of a state
 		
 		System.out.println("Generating all possible states");
